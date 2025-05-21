@@ -13,6 +13,7 @@
 * 支持随机状态模拟切换，可配置打开或关闭
 * ✅ 从 v0.4.3 开始，Discovery Payload 中增加 `device` 信息，使设备可在 HA 中显示为“设备页”
 * ✅ 从 v0.4.4 开始，支持通过 `count/prefix/pid` 自动生成设备定义，无需手写 1000 条
+* ✅ 每个灯设备对应 Home Assistant 中一个独立设备页（通过唯一 `device.identifiers` 实现）
 * 支持 pip install 安装，使用 CLI 命令 `vlight` 启动
 
 ---
@@ -46,6 +47,7 @@ vlight_v044/
 * 接收来自 MQTT 的控制命令，更新本地状态
 * 状态持久化到本地 JSON 文件
 * 支持模拟行为（随机变化）
+* ✅ 每个灯的 `device.identifiers` 使用 `{did}`，确保 Home Assistant 创建独立设备页
 
 ### 2. `mqtt_client.py`
 
@@ -101,8 +103,8 @@ homeassistant/light/<pid>/<did>/config
   "color_temp": true,
   "schema": "json",
   "device": {
-    "identifiers": ["vlight-hub"],
-    "name": "vLight 虚拟灯控制器",
+    "identifiers": ["light-001"],
+    "name": "vLight 虚拟灯 light-001",
     "manufacturer": "LinknLink",
     "model": "vlight-sim",
     "sw_version": "0.4.4"
@@ -165,7 +167,7 @@ mqtt:
   discovery_prefix: "homeassistant"
 
 lights:
-  count: 1000
+  count: 4
   prefix: "light"
   pid: "vlight"
   simulate_behavior: true
