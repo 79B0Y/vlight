@@ -1,12 +1,12 @@
-# vlight 虚拟晶光灯应用设计文档 (v0.4.0)
+# vlight 虚拟灯光应用设计文档 (v0.4.0)
 
 ## 一、项目简介
 
-**vlight** 是一个使用 Python 编写的可配置式 MQTT 虚拟晶光灯系统，支持 Home Assistant 的自动发现 (MQTT Discovery)，可以模拟多台灯光设备。
+**vlight** 是一个使用 Python 编写的可配置式 MQTT 虚拟灯光系统，支持 Home Assistant 的自动发现 (MQTT Discovery)，可以模拟多台灯光设备。
 
 它有如下功能：
 
-* 多台虚拟晶光灯创建（数量可配置）
+* 多台虚拟灯光创建（数量可配置）
 * 支持 MQTT + Home Assistant Discovery 协议
 * 支持独立设备状态管理：开/关、亮度、RGB、色温
 * 状态持久化：重启后保持最后状态
@@ -24,7 +24,7 @@ vlight_v4/
 │   ├── main.py            全局进入点
 │   ├── config.py          配置文件读取
 │   ├── logger.py          日志初始化
-│   ├── mqtt_client.py     MQTT 造成器，初始化所有灯设备
+│   ├── mqtt_client.py     MQTT 造器，初始化所有灯设备
 │   ├── light_device.py    灯设备实体，包括状态和功能
 │   └── state_store.py     将灯的状态持久化 JSON 文件
 ├── configuration.yaml     用户配置文件
@@ -118,7 +118,9 @@ Payload:
 
 ---
 
-## 五、安装和启动
+## 五、安装与使用
+
+### 安装步骤
 
 ```bash
 unzip vlight_v4_package.zip
@@ -126,8 +128,21 @@ cd vlight_v4
 python3 -m venv venv
 source venv/bin/activate
 pip install .
+```
+
+### 启动程序
+
+```bash
 vlight
 ```
+
+程序将：
+
+* 读取配置
+* 启动所有设备
+* 与 MQTT broker 建立连接
+* 注册 Home Assistant 设备
+* 启动灯光模拟逻辑（如已启用）
 
 ---
 
