@@ -1,4 +1,4 @@
-# vlight 虚拟灯光应用设计文档 (v0.4.0)
+# vlight 虚拟灯光应用设计文档 (v0.4.3)
 
 ## 一、项目简介
 
@@ -7,10 +7,11 @@
 它有如下功能：
 
 * 多台虚拟灯光创建（数量可配置）
-* 支持 MQTT + Home Assistant Discovery 协议
+* 支持 MQTT + Home Assistant Discovery 协议（符合 iSG 扩展格式）
 * 支持独立设备状态管理：开/关、亮度、RGB、色温
 * 状态持久化：重启后保持最后状态
 * 支持随机状态模拟切换，可配置打开或关闭
+* ✅ 从 v0.4.3 开始，Discovery Payload 中增加 `device` 信息，使设备可在 HA 中显示为“设备页”
 * 支持 pip install 安装，使用 CLI 命令 `vlight` 启动
 
 ---
@@ -18,19 +19,19 @@
 ## 二、目录结构
 
 ```
-vlight_v4/
+vlight_v043/
 ├── vlight/                 应用核心源码
 │   ├── __init__.py        
 │   ├── main.py            全局进入点
 │   ├── config.py          配置文件读取
 │   ├── logger.py          日志初始化
-│   ├── mqtt_client.py     MQTT 造器，初始化所有灯设备
+│   ├── mqtt_client.py     MQTT 管理器，初始化所有灯设备
 │   ├── light_device.py    灯设备实体，包括状态和功能
 │   └── state_store.py     将灯的状态持久化 JSON 文件
 ├── configuration.yaml     用户配置文件
-├── setup.py               pip install 设置文件
+├── setup.py               pip 安装设置文件
 ├── requirements.txt       依赖列表
-└── vlight_v4_package.zip  打包成果
+└── vlight_v043_full_package.zip  打包成果
 ```
 
 ---
@@ -39,12 +40,15 @@ vlight_v4/
 
 ### 1. `light_device.py`
 
-* 设备实体类
+* 设备实体类，支持多个子指令 topic 控制：
 
-  * `self.state` 保存灯的开关、亮度、色温、RGB 状态
-  * 接收 Home Assistant 发来的命令 topic，执行状态更新
-  * 通过 `publish_state()` 发布当前状态
-  * 重启后从 JSON 状态文件恢复
+  * `/switch` 控制开关
+  * `/brightness` 控制亮度
+  * `/rgb` 控制 RGB 颜色
+  * `/colortemp` 控制色温
+* `self.state` 保存设备状态，并通过 `status` topic 发布
+* 支持 `availability_topic` 表示设备在线状态（发布 `online`）
+* ✅ 在 discovery payload 中加入 `device` 字段
 
 ### 2. `mqtt_client.py`
 
@@ -52,17 +56,18 @@ vlight_v4/
 * 初始化多个 `LightDevice`
 * 每个 device 会:
 
-  * 发送 discovery 描述 topic
-  * 订阅 set topic，处理接收命令
+  * 发布 discovery 描述 topic
+  * 订阅各功能控制 topic
+  * 接收指令后更新状态并发布反馈
 
 ### 3. `state_store.py`
 
-* 使用 `~/.vlight/state/` 路径保存灯的名为 light-xxx.json 文件
-* 提供 `save_state()` / `load_state()` 两个方法
+* 使用 `~/.vlight/state/` 路径保存每盏灯的 JSON 状态文件
+* 重启后自动恢复最近状态
 
 ### 4. 随机状态模拟
 
-* 如果 `simulate_behavior: true` ，则每台灯会自动随机切换（速度 10-30s），包括:
+* 如果 `simulate_behavior: true`，每盏灯每隔 10\~30 秒随机变化状态：
 
   * 开/关
   * 亮度
@@ -71,42 +76,41 @@ vlight_v4/
 
 ---
 
-## 四、MQTT 协议配置
+## 四、MQTT 协议配置（支持 iSG 结构）
 
-### 1. discovery topic
+### 1. Discovery Topic
 
 ```text
 Topic:
-  homeassistant/light/light-001/config
+  homeassistant/light/<pid>/<did>/config
 Payload:
 {
-  "name": "Virtual Light 001",
+  "name": "light-001",
   "unique_id": "light-001",
-  "command_topic": "home/vlight/light-001/set",
-  "state_topic": "home/vlight/light-001/state",
-  "schema": "json",
+  "availability_topic": "home/vlight/light-001/availability",
+  "state_topic": "home/vlight/light-001/status",
+  "command_topic": "home/vlight/light-001/switch",
+  "brightness_command_topic": "home/vlight/light-001/brightness",
+  "rgb_command_topic": "home/vlight/light-001/rgb",
+  "color_temp_command_topic": "home/vlight/light-001/colortemp",
   "brightness": true,
   "rgb": true,
-  "color_temp": true
+  "color_temp": true,
+  "schema": "json",
+  "device": {
+    "identifiers": ["vlight-hub"],
+    "name": "vLight 虚拟灯控制器",
+    "manufacturer": "LinknLink",
+    "model": "vlight-sim",
+    "sw_version": "0.4.3"
+  }
 }
 ```
 
-### 2. 接收 topic
+### 2. 状态 Topic
 
 ```text
-Topic: home/vlight/light-001/set
-Payload:
-{
-  "state": "ON",
-  "brightness": 150,
-  "rgb_color": [0,255,128]
-}
-```
-
-### 3. 状态发布 topic
-
-```text
-Topic: home/vlight/light-001/state
+Topic: home/vlight/light-001/status
 Payload:
 {
   "state": "ON",
@@ -116,6 +120,21 @@ Payload:
 }
 ```
 
+### 3. 控制 Topics
+
+```text
+home/vlight/light-001/switch → "1" / "0"
+home/vlight/light-001/brightness → 0~255
+home/vlight/light-001/rgb → "255,0,0"
+home/vlight/light-001/colortemp → 153~500
+```
+
+### 4. Availability Topic
+
+```text
+home/vlight/light-001/availability → "online"
+```
+
 ---
 
 ## 五、安装与使用
@@ -123,8 +142,8 @@ Payload:
 ### 安装步骤
 
 ```bash
-unzip vlight_v4_package.zip
-cd vlight_v4
+unzip vlight_v043_full_package.zip
+cd vlight_v043
 python3 -m venv venv
 source venv/bin/activate
 pip install .
@@ -139,14 +158,20 @@ vlight
 程序将：
 
 * 读取配置
-* 启动所有设备
+* 启动所有设备并发布 discovery 信息
 * 与 MQTT broker 建立连接
-* 注册 Home Assistant 设备
-* 启动灯光模拟逻辑（如已启用）
+* 将实体注册进 Home Assistant
+* 启动灯光模拟逻辑（如配置启用）
 
 ---
 
 ## 六、配置文件格式 (configuration.yaml)
+
+> 以下是配置文件中用于控制虚拟灯功能的说明：
+>
+> * `simulate_behavior: true/false`：是否启用随机状态变化模拟（开/关、亮度、颜色、色温）
+> * `default_state`：每台灯启动时的默认状态（如果无状态持久化文件）
+> * `definitions`：定义多个虚拟灯的设备 ID（did）和产品 ID（pid）
 
 ```yaml
 mqtt:
@@ -167,12 +192,12 @@ lights:
     rgb_color: [255, 255, 255]
   definitions:
     - did: "light-001"
-      pid: "V1"
+      pid: "vlight"
     - did: "light-002"
-      pid: "V2"
+      pid: "vlight"
 
 logging:
-  level: "info"
+  level: "debug"
   file: "./logs/vlight.log"
 ```
 
