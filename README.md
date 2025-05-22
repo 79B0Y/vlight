@@ -149,6 +149,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip install .
 vlight
+rm -rf ~/.vlight/state #如果异常退出，导致空或非法的 JSON，从而在 json.load() 时出错
 ```
 
 ---
