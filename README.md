@@ -156,6 +156,17 @@ vlight -c /path/to/config.yaml  # 如需指定其他配置文件
 rm -rf ~/.vlight/state #如果异常退出，导致空或非法的 JSON,从而在 json.load() 时出错
 ```
 
+### Ubuntu 快速安装
+
+如果希望在 Ubuntu 系统中以后台服务的方式运行，可直接执行脚本完成安装并开启开机自启：
+
+```bash
+sudo bash scripts/install_ubuntu.sh
+```
+
+脚本会将程序安装到 `/opt/vlight`，并注册为 `systemd` 服务。安装完成后可通过
+`sudo systemctl status vlight` 查看运行状态。
+
 ---
 
 ## 六、配置文件格式 (configuration.yaml)
