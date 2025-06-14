@@ -15,6 +15,14 @@ class MQTTManager:
         self.sensors = []
 
     def on_connect(self, client, userdata, flags, rc):
+        """Handle connection callbacks from the MQTT client."""
+        if rc != 0:
+            # Non-zero return codes indicate connection failure. Log the issue
+            # and raise an exception so that the service can react accordingly
+            # instead of silently continuing in a bad state.
+            self.logger.error(f"Failed to connect to MQTT broker, rc={rc}")
+            raise ConnectionError(f"MQTT connection failed with code {rc}")
+
         self.logger.info("Connected to MQTT broker with code " + str(rc))
         for dev in self.devices:
             dev.announce_discovery()
