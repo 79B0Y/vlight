@@ -22,3 +22,15 @@ lights:
 logging:
   level: "info"
   file: "./logs/vlight.log"
+
+sensors:
+  count: 1
+  prefix: "temp"
+  pid: "vsensor"
+  base_topic: "home"
+  default_value: 250
+  simulate_behavior:
+    enabled: true
+    interval: 10
+    range: [250, 300]
+    random: true
