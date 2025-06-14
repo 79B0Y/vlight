@@ -26,7 +26,6 @@ class TempSensor:
             "unique_id": self.did,
             "name": self.did,
             "availability_topic": self.availability_topic,
-            "device_type": "sensor",
             "device_class": "temperature",
             "state_topic": self.state_topic,
             "value_template": "{{ (value_json.envtemp * 0.1) | round(1) }}",
