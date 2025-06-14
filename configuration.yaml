@@ -1,0 +1,23 @@
+
+mqtt:
+  host: "127.0.0.1"
+  port: 1883
+  username: ""
+  password: ""
+  base_topic: "home/vlight"
+  discovery_prefix: "homeassistant"
+
+lights:
+  count: 1000
+  simulate_behavior: true
+  pid: "vlight"
+  prefix: "light"
+  default_state:
+    state: "OFF"
+    brightness: 128
+    color_temp: 250
+    rgb_color: [255, 255, 255]
+
+logging:
+  level: "info"
+  file: "./logs/vlight.log"
