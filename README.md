@@ -104,7 +104,7 @@ homeassistant/light/<pid>/<did>/config
   "schema": "json",
   "device": {
     "identifiers": ["light-001"],
-    "name": "vLight 虚拟灯 light-001",
+    "name": "vLight 虚拟灯控制器",
     "manufacturer": "LinknLink",
     "model": "vlight-sim",
     "sw_version": "0.4.4"
