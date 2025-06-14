@@ -12,7 +12,7 @@ class TempSensor:
         self.logger = logger
         self.discovery_prefix = discovery_prefix
         self.base_topic = f"{base_topic}/{did}"
-        self.availability_topic = f"{self.base_topic}/available"
+        self.availability_topic = f"{self.base_topic}/availability"
         self.state_topic = f"{self.base_topic}/status"
         self.value = initial_value  # stored as integer representing 0.1 \u00b0C
         self.sim_cfg = simulate_cfg or {}
