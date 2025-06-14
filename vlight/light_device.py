@@ -67,7 +67,7 @@ class LightDevice:
             "color_temp_command_topic": self.base_topic + "/colortemp",
             "schema": "json",
             "device": {
-                "identifiers": ["vlight-hub"],
+                "identifiers": [self.did],
                 "name": "vLight 虚拟灯控制器",
                 "manufacturer": "LinknLink",
                 "model": "vlight-sim",
