@@ -196,3 +196,9 @@ logging:
 | MQTT TLS 支持 | 安全连接验证                   |
 | 状态同步 API    | 提供外部读取虚拟灯状态的接口           |
 | 自定义模板输出     | 兼容更复杂的 HA Discovery 模板结构 |
+
+---
+
+## License
+
+vlight is released under the MIT License. See [LICENSE](LICENSE) for details.
