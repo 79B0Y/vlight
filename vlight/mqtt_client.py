@@ -35,9 +35,11 @@ class MQTTManager:
         base_topic = mqtt_cfg['base_topic']
         discovery_prefix = mqtt_cfg['discovery_prefix']
         simulate = self.config['lights'].get('simulate_behavior', False)
+        static_count = self.config['lights'].get('static_count', 0)
 
-        for defn in self.config['lights']['definitions']:
+        for idx, defn in enumerate(self.config['lights']['definitions']):
             state = dict(self.config['lights']['default_state'])
+            device_simulate = simulate and idx >= static_count
             device = LightDevice(
                 did=defn['did'],
                 pid=defn['pid'],
@@ -46,7 +48,7 @@ class MQTTManager:
                 base_topic=base_topic,
                 logger=self.logger,
                 initial_state=state,
-                simulate=simulate
+                simulate=device_simulate
             )
             self.devices.append(device)
 
