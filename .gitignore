@@ -1,0 +1,15 @@
+# Ignore Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Ignore virtual environments
+venv/
+
+# Ignore logs
+logs/
+
+# Ignore packaged archives
+*_full_package.zip
