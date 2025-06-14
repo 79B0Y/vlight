@@ -183,6 +183,15 @@ sudo bash scripts/install_ubuntu.sh
 脚本会将程序安装到 `/opt/vlight`，并注册为 `systemd` 服务。安装完成后可通过
 `sudo systemctl status vlight` 查看运行状态。
 
+### 修改配置后的重启
+
+vlight 仅在启动时读取 `configuration.yaml`。若修改了配置，需重启程序或服务
+才能让新设置生效：
+
+* **手动运行**：在运行终端按 `Ctrl+C` 停止当前进程，然后重新执行 `vlight`
+  （可使用 `-c` 指定配置文件）。
+* **systemd 服务**：执行 `sudo systemctl restart vlight`。
+
 ---
 
 ## 六、配置文件格式 (configuration.yaml)
