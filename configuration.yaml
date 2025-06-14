@@ -10,6 +10,7 @@ mqtt:
 lights:
   count: 1000
   simulate_behavior: true
+  static_count: 0
   pid: "vlight"
   prefix: "light"
   default_state:

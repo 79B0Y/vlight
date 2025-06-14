@@ -16,6 +16,7 @@
 * ✅ 每个灯设备对应 Home Assistant 中一个独立设备页（通过唯一 `device.identifiers` 实现）
 * 支持 pip install 安装，使用 CLI 命令 `vlight` 启动
 * ✅ 新增 `vlight.__version__` 可查看当前库版本
+* ✅ 新增 `static_count` 可设置不自动变化的设备数量
 
 ---
 
@@ -174,6 +175,7 @@ lights:
   prefix: "light"
   pid: "vlight"
   simulate_behavior: true
+  static_count: 0
   default_state:
     state: "OFF"
     brightness: 128
