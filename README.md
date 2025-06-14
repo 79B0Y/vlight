@@ -15,6 +15,7 @@
 * ✅ 从 v0.4.4 开始，支持通过 `count/prefix/pid` 自动生成设备定义，无需手写 1000 条
 * ✅ 每个灯设备对应 Home Assistant 中一个独立设备页（通过唯一 `device.identifiers` 实现）
 * 支持 pip install 安装，使用 CLI 命令 `vlight` 启动
+* ✅ 新增 `vlight.__version__` 可查看当前库版本
 
 ---
 
