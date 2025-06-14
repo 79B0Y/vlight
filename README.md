@@ -148,8 +148,9 @@ cd vlight_v044
 python3 -m venv venv
 source venv/bin/activate
 pip install .
-vlight
-rm -rf ~/.vlight/state #如果异常退出，导致空或非法的 JSON，从而在 json.load() 时出错
+vlight            # 默认读取当前目录下的 configuration.yaml
+vlight -c /path/to/config.yaml  # 如需指定其他配置文件
+rm -rf ~/.vlight/state #如果异常退出，导致空或非法的 JSON,从而在 json.load() 时出错
 ```
 
 ---
