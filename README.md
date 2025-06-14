@@ -145,6 +145,22 @@ home/vlight/light-001/status
 
 ## 五、安装与使用
 
+### 源码安装 (GitHub)
+
+在 Ubuntu 环境中可直接从仓库克隆代码并安装：
+
+```bash
+git clone https://github.com/79B0Y/vlight.git
+cd vlight
+python3 -m venv venv
+source venv/bin/activate
+pip install .
+vlight            # 默认读取当前目录下的 configuration.yaml
+vlight -c /path/to/config.yaml  # 如需指定其他配置文件
+```
+
+### 压缩包安装
+
 ```bash
 unzip vlight_v044_full_package.zip
 cd vlight_v044
