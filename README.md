@@ -11,6 +11,7 @@
 * 支持独立设备状态管理：开/关、亮度、RGB、色温
 * 状态持久化：重启后保持最后状态
 * 支持随机状态模拟切换，可配置打开或关闭
+* 新增温度传感器模拟，可配置数量与自动变化
 * ✅ 从 v0.4.3 开始，Discovery Payload 中增加 `device` 信息，使设备可在 HA 中显示为“设备页”
 * ✅ 从 v0.4.4 开始，支持通过 `count/prefix/pid` 自动生成设备定义，无需手写 1000 条
 * ✅ 每个灯设备对应 Home Assistant 中一个独立设备页（通过唯一 `device.identifiers` 实现）
@@ -181,6 +182,18 @@ lights:
     brightness: 128
     color_temp: 250
     rgb_color: [255, 255, 255]
+
+sensors:
+  count: 1
+  prefix: "temp"
+  pid: "vsensor"
+  base_topic: "home"
+  default_value: 250
+  simulate_behavior:
+    enabled: true
+    interval: 10
+    range: [250, 300]
+    random: true
 
 logging:
   level: "info"

@@ -1,6 +1,7 @@
 
 import paho.mqtt.client as mqtt
 from vlight.light_device import LightDevice
+from vlight.temp_sensor import TempSensor
 
 class MQTTManager:
     def __init__(self, config, logger):
@@ -11,6 +12,7 @@ class MQTTManager:
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.devices = []
+        self.sensors = []
 
     def on_connect(self, client, userdata, flags, rc):
         self.logger.info("Connected to MQTT broker with code " + str(rc))
@@ -21,6 +23,9 @@ class MQTTManager:
             self.client.subscribe(f"{dev.base_topic}/brightness")
             self.client.subscribe(f"{dev.base_topic}/colortemp")
             self.client.subscribe(f"{dev.base_topic}/rgb")
+        for sensor in self.sensors:
+            sensor.announce_discovery()
+            sensor.publish_state()
 
     def on_message(self, client, userdata, msg):
         topic = msg.topic
@@ -51,6 +56,24 @@ class MQTTManager:
                 simulate=device_simulate
             )
             self.devices.append(device)
+
+        sensors_cfg = self.config.get('sensors')
+        if sensors_cfg:
+            sensor_base = sensors_cfg.get('base_topic', 'home')
+            sensor_sim = sensors_cfg.get('simulate_behavior', {})
+            initial_value = sensors_cfg.get('default_value', 250)
+            for defn in sensors_cfg['definitions']:
+                sensor = TempSensor(
+                    did=defn['did'],
+                    pid=defn['pid'],
+                    mqtt_client=self.client,
+                    discovery_prefix=discovery_prefix,
+                    base_topic=sensor_base,
+                    logger=self.logger,
+                    initial_value=initial_value,
+                    simulate_cfg=sensor_sim,
+                )
+                self.sensors.append(sensor)
 
         self.client.connect(mqtt_cfg['host'], mqtt_cfg['port'], 60)
         self.client.loop_start()
