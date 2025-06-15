@@ -23,3 +23,7 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         logger.info("Shutdown requested")
+
+
+if __name__ == "__main__":
+    main()
